@@ -98,7 +98,6 @@ public class AimEvent : MonoBehaviour
     private bool isExtend = false;
 
     private List<Vector3> posSet = new List<Vector3>();
-    private List<GameObject> gameSet = new List<GameObject>();
     public void onMouseDownExtend()
     {
         if (isItemMoving && item.canSet)
@@ -107,6 +106,7 @@ public class AimEvent : MonoBehaviour
             startPos = aimObject.transform.position;
             endPos = startPos;
             isExtend = true;
+            
             StartCoroutine(ExtendCube());
             isItemMoving = false;
         }
@@ -124,44 +124,31 @@ public class AimEvent : MonoBehaviour
             Vector3 currentPos = wPos;
             Vector3 newPos = (wPos + startPos) / 2;
             aimObject.transform.position = newPos;
-            Vector3 sub = currentPos - startPos;
-
-            //Vector3 newScale;
-            //newScale.x = preScale.x * sub.x ;
-            //newScale.y = preScale.y * sub.y ;
-            //newScale.z = preScale.z * sub.z ;
-            //Debug.Log($"sub: {sub}, new:{newScale}");
-            //aimObject.transform.localScale = newScale;
             
-            //int xCount = (int) (float)(sub.x / 1.4f);
-            //xCount = xCount > 0 ? xCount : -xCount;
-            //int yCount = (int) (float)(sub.y / 0.4f);
-            //yCount = yCount > 0 ? yCount : -yCount;
-            //int zCount = (int) (float)(sub.z / 0.4f);
-            //zCount = zCount > 0 ? zCount : -zCount;
-
-            //for (int x = 0; x < xCount; x++)
-            //{
-            //    for (int y = 0; y < yCount; y++)
-            //    {
-            //        for (int z = 0; z < zCount; z++)
-            //        {
-            //            Vector3 subNormal = sub.normalized;
-            //            Vector3 newSubPos = startPos;
-            //            if (posSet.Contains(newSubPos))
-            //            {
-            //                Debug.Log("already have it!");
-            //            }
-            //            
-            //            posSet.Add(newPos);   
-            //           newSubPos.x += subNormal.x * x;
-            //           newSubPos.y += subNormal.y * y;
-            //           newSubPos.z += subNormal.z * z;
-            //        }
-            //    }
-            //}
-
+            GenObj(startPos,wPos);
             yield return new WaitForSeconds(0.01f);
+        }
+    }
+
+    void GenObj(Vector3 startPos, Vector3 endPos)
+    {
+        Vector3 len = endPos - startPos;
+        Vector3 scale = aimObject.transform.localScale;
+        Vector3 eachAdd = len.normalized * scale.x;
+        Debug.Log($"add: {eachAdd}, len:{len}");
+        bool xdir = startPos.x > endPos.x;
+        float xlen = len.x > 0 ? len.x : -len.x;
+        int xNums = (int)(xlen / scale.x);
+        if (xNums == 0) xNums = 1;
+        
+        bool ydir = startPos.y > endPos.y;
+        bool zdir = startPos.z > endPos.z;
+        
+        for(int x = 0 ; x < xNums; x++)
+        {
+            Vector3 newpos = startPos;
+            newpos.x += x*eachAdd.x;
+            GameObject.Instantiate(aimObject, newpos, Quaternion.identity);
         }
     }
 
