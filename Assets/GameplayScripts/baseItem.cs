@@ -10,6 +10,26 @@ public class baseItem : MonoBehaviour
     public Action onMouseDowning;
     public Action onMouseUping;
     public Action<Vector3> onSetPos;
+
+    // could be static todo
+    public Material beSelectedMat;
+    
+    private Material originMat;
+
+    public void Awake()
+    {
+        originMat = GetComponent<MeshRenderer>().material;
+    }
+
+    public Void SetSeleced(bool isSeleced)
+    {
+        if(isSeleced)
+            GetComponent<MeshRenderer>().material = beSelectedMat;
+        else
+            GetComponent<MeshRenderer>().material = originMat;
+            
+    }
+
     public void selectTodd()
     {
         if (Input.GetMouseButtonDown(0))
