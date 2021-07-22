@@ -88,12 +88,13 @@ public class UIBaseAction : MonoBehaviour
     /// 多个物体选择的显示
     /// </summary>
     /// <param name="chooseShow"> 显示选择框的GameObj </param>
+    /// <param name="realScale"> 原始大小 </param>
     /// <param name="startPos"> 空间中任意位置，需要规约化 </param>
     /// <param name="endPos"> 空间中任意位置，需要规约化 </param>
     /// <param name="chooseType"> 坐标集考虑的坐标 </param>
     /// <param name="OnReset"> 变更选择平面 </param>
     /// <returns> 返回startPos 和 endPos 之间，规约化的坐标集 </returns>
-    public static List<Vector3> ChooseMultiObjectShow(GameObject chooseShow, Vector3 startPos, Vector3 endPos, ChooseType chooseType, Action OnReset = null)
+    public static List<Vector3> ChooseMultiObjectShow(GameObject chooseShow, Vector3 realScale, Vector3 startPos, Vector3 endPos, ChooseType chooseType, Action OnReset = null)
     {
         OnReset?.Invoke();
         
@@ -114,13 +115,14 @@ public class UIBaseAction : MonoBehaviour
         if(len.y != 0) objPosDiff.y = objPosDiff.y > 0 ? objPosDiff.y - 1 : objPosDiff.y + 1;
         if(len.z != 0) objPosDiff.z = objPosDiff.z > 0 ? objPosDiff.z - 1 : objPosDiff.z + 1;
         Vector3 objPos = startPos + (objPosDiff*step) / 2;
-        Vector3 temp = chooseShow.transform.localScale;
+        Vector3 temp = realScale;
         // xAxis
         if (isX == ChooseType.XAxis)
         {
             temp.x = step * lenx;
         }else
         {
+            temp.x = realScale.x;
             objPos.x = startPos.x;
         }
         // yAxis
@@ -130,6 +132,7 @@ public class UIBaseAction : MonoBehaviour
         }
         else
         {
+            temp.y = realScale.y;
             objPos.y = startPos.y;
         }
         // zAxis
@@ -138,6 +141,7 @@ public class UIBaseAction : MonoBehaviour
             temp.z = step * lenz;
         }else
         {
+            temp.z = realScale.z;
             objPos.z = startPos.z;
         }
         chooseShow.transform.localScale = temp;
@@ -179,7 +183,12 @@ public class UIBaseAction : MonoBehaviour
         }
         return objs;
     }
-
+    /// <summary>
+    ///  三维坐标判断
+    /// </summary>
+    /// <param name="hitDir"></param>
+    /// <param name="OnRightDirTodo"> 最相关得维度回调 </param>
+    /// <param name="OnleftDirTodo"> 最不相关得维度回调 </param>
     public static void CheckVectorDir(Vector3 hitDir, Action<ChooseType,bool> OnRightDirTodo = null, Action<ChooseType,bool> OnleftDirTodo = null)
     {
         hitDir = hitDir.normalized;
@@ -196,24 +205,48 @@ public class UIBaseAction : MonoBehaviour
         }
         else if (yDirDotAbs >= xDirDotAbs && yDirDotAbs >= zDirDotAbs)
         {
-            OnRightDirTodo?.Invoke(ChooseType.YAxis,xDirDot>0);
+            OnRightDirTodo?.Invoke(ChooseType.YAxis,yDirDot>0);
         }
         else 
         {
-            OnRightDirTodo?.Invoke(ChooseType.ZAxis,xDirDot>0);
+            OnRightDirTodo?.Invoke(ChooseType.ZAxis,zDirDot>0);
         }
         // leftDir
-        if (xDirDotAbs <= yDirDotAbs && xDirDotAbs <= zDirDotAbs)
+        //Debug.Log($"yDot:{yDirDotAbs}");
+        if (yDirDot < 0.3 && yDirDot > -1)
         {
-            OnleftDirTodo?.Invoke(ChooseType.XAxis,xDirDot>0);
+            OnleftDirTodo?.Invoke(ChooseType.YAxis,yDirDot>0);
         }
-        else if (yDirDotAbs <= xDirDotAbs && yDirDotAbs <= zDirDotAbs)
+        else
         {
-            OnleftDirTodo?.Invoke(ChooseType.YAxis,xDirDot>0);
+            Vector3 xzDir = hitDir;
+            xzDir.y = 0;
+            float xPanelDirDot = Vector3.Dot(xzDir, Vector3.right);
+            float xPanelDirDotAbs = xPanelDirDot > 0 ? xPanelDirDot : -xPanelDirDot;
+            float zPanelDirDot = Vector3.Dot(xzDir, Vector3.forward);
+            float zPanelDirDotAbs = zPanelDirDot > 0 ? zPanelDirDot : -zPanelDirDot;
+            if (xPanelDirDotAbs > zPanelDirDotAbs)
+            {
+                OnleftDirTodo?.Invoke(ChooseType.XAxis,xPanelDirDot>0);
+            }
+            else
+            {
+                OnleftDirTodo?.Invoke(ChooseType.ZAxis,zPanelDirDot>0);
+            }
         }
-        else 
-        {
-            OnleftDirTodo?.Invoke(ChooseType.ZAxis,xDirDot>0);
-        }
+        
+        
+        //if (xDirDotAbs <= yDirDotAbs && xDirDotAbs <= zDirDotAbs)
+        //{
+        //    OnleftDirTodo?.Invoke(ChooseType.XAxis,xDirDot>0);
+        //}
+        //else if (yDirDotAbs <= xDirDotAbs && yDirDotAbs <= zDirDotAbs)
+        //{
+        //    OnleftDirTodo?.Invoke(ChooseType.YAxis,xDirDot>0);
+        //}
+        //else 
+        //{
+        //    OnleftDirTodo?.Invoke(ChooseType.ZAxis,xDirDot>0);
+        //}
     }
 }

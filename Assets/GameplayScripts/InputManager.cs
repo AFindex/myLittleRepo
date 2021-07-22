@@ -30,13 +30,10 @@ public class InputManager : MonoBehaviour
 
     void Update()
     {
-        // Add
-        if(AimEvent.Instance.item)
-            AimEvent.Instance.item.selectTodd();
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
             onMouseScroll?.Invoke();
         }
-        
+        GameplayManager.Instance.ChangeOpMode();
     }
 }

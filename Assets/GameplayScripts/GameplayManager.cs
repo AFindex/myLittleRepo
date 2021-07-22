@@ -30,35 +30,65 @@ public class GameplayManager : MonoBehaviour
      }
         
     // Start is called before the first frame update
-    public GameObject yourCar;
+    public GameObject yourCarObj;
+    public YourCar yourCar;
     public List<baseItem> items;
-    private int index;
+    private int index = -1;
     void Awake()
     {
-        foreach (var item in items)
-        {
-
-        }
         InputManager.Instance.ResigerMouseScroll(MouseMoveEvent);
+        GameUIManager.Instance.InitItem(items);
+        MouseMoveEvent();
     }
-    
-    
-    
-    
 
     void MouseMoveEvent()
     {
-        int maxNum = items.Count;
+        if (index < items.Count && index >= 0)
+        {
+            AimEvent.Instance.OnUISelectedChange(items[index], false);
+            GameUIManager.Instance.SetState("测试方块-建造");
+        }
+        int maxNum = 8;
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         int add = scroll > 0 ? 1 : -1;
         index += add;
-        if (index < 0) index = maxNum;
+        if (index < 0) index = maxNum - 1;
+        else if (index > maxNum) index = 0;
         index %= maxNum;
+
+        if (index < items.Count && index >= 0)
+        {
+            AimEvent.Instance.OnUISelectedChange(items[index], true);
+            GameUIManager.Instance.SetState("测试方块-建造");
+        }
+        else
+        {
+            GameUIManager.Instance.SetState("");
+        }
         
-        // switch fun with cube
-        AimEvent.Instance.OnAimObjectChange(items[index].gameObject);
-        AimEvent.Instance.aimShowObject = Instantiate(items[index].gameObject);
-        Debug.Log($"scroll :{scroll}, index: {index}");
+        GameUIManager.Instance.SetBoxSelected(index);
+    }
+
+    public void ChangeOpMode()
+    {
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Debug.Log($"Change Op Mode to : OpType.Dele");
+            if (index < items.Count)
+            {
+                items[index].opType = OpType.Dele;
+                GameUIManager.Instance.SetState("测试方块-涂色");
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Debug.Log($"Change Op Mode to : OpType.Add");
+            if (index < items.Count)
+            {
+                items[index].opType = OpType.Add;
+                GameUIManager.Instance.SetState("测试方块-建造");
+            }
+        }
     }
 
 }

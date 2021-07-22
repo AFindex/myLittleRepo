@@ -19,13 +19,28 @@ public class GameUIManager : MonoBehaviour
         }
     }
     public Text State;
-    void Start()
+    public List<UI_SelectBox> selectBoxes;
+
+    public void SetBoxSelected(int index)
     {
+        for (int i = 0; i < selectBoxes.Count; i++)
+        {
+            if(i == index)
+                selectBoxes[index].SetSelected(true);
+            else
+                selectBoxes[i].SetSelected(false);   
+        }
+    }
+
+    public void InitItem(List<baseItem> toInit)
+    {
+        selectBoxes[0].SetItem();
         
     }
 
-    void Update()
+    public void SetState(string info)
     {
-        
+        State.text = info;
     }
+
 }

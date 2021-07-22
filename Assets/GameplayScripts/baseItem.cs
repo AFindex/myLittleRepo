@@ -4,46 +4,80 @@ using System.Collections.Generic;
 using TMPro.EditorUtilities;
 using UnityEngine;
 
+public enum OpType
+{
+    Add = 0,
+    Dele = 1,
+}
+
 public class baseItem : MonoBehaviour
 {
     public bool canSet = true;
-    public Action onMouseDowning;
-    public Action onMouseUping;
-    public Action<Vector3> onSetPos;
 
-    // could be static todo
     public Material beSelectedMat;
+    public Material preBuildMat;
+    public Material originMat;
+    public Material selectedShow;
     
-    private Material originMat;
-
+    // refact
+    public int ItemIndex = -1;
+    public Color noReady;
+    public Color Ready;
+    public OpType opType = OpType.Add;
+    private String itemName = "test";
+    private SkillFSM itemFsm;
+    
+    // state
+    MoveItemState moveState;
+    AddItemState addState ;
+    DeleItemState deleState ;   
     public void Awake()
     {
         originMat = GetComponent<MeshRenderer>().material;
     }
 
-    public Void SetSeleced(bool isSeleced)
+    public void OnUISelected(bool isSelected)
+    {
+        if (isSelected)
+        {
+            baseItem item = gameObject.GetComponent<baseItem>();
+            if(moveState == null)
+                moveState = new MoveItemState(item);
+            if(addState == null)
+                addState = new AddItemState(item);
+            if(deleState == null)
+                deleState = new DeleItemState(item);
+            if (itemFsm == null)
+            {
+                itemFsm = new SkillFSM();
+                itemFsm.Create(itemFsm+"FSM", moveState, addState, deleState);
+                FsmManager.Instance.AddFsm(itemFsm.fsmName, itemFsm);
+            }
+                    
+            itemFsm.FsmStart<MoveItemState>();
+        }
+        else
+        {
+            if (itemFsm != null)
+            {
+                itemFsm.FsmEnd();
+            }
+        }
+       
+    }
+    public void DestroySelf()
+    {
+        // 之后使用对象池回收
+        Destroy(this.gameObject);
+    }
+
+    public void SetGameObjSeleced(bool isSeleced)
     {
         if(isSeleced)
             GetComponent<MeshRenderer>().material = beSelectedMat;
         else
             GetComponent<MeshRenderer>().material = originMat;
             
-    }
-
-    public void selectTodd()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            onMouseDowning?.Invoke();
-        }
-        if (Input.GetMouseButtonUp(0))
-        {
-            onMouseUping?.Invoke();
-        }
-    }
-    public void OnSetThisPos(Vector3 pos)
-    {
-        onSetPos?.Invoke(pos);
     }
 
     private void OnTriggerStay(Collider other)

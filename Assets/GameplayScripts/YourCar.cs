@@ -12,9 +12,8 @@ public class YourCar : MonoBehaviour
 {
     public YourCarState CurrentState;
     private Vector3 center;
-    private List<baseItem> OwnItem;
+    private Dictionary<int,baseItem> OwnItem;
     // 相对位置
-    private List<Vector3> OwnItemPos;
 
     private void Start()
     {
@@ -39,26 +38,53 @@ public class YourCar : MonoBehaviour
         yield return null;
     }
 
-    public void SelectMyItem(Vector3 startPos, Vector3 endPos, UIBaseAction.ChooseType type, Action<baseItem> OnSelectTodo = null)
+    public void DestoryMyItem(List<int> toDele)
+    {
+        for (int i = 0; i < toDele.Count; i++)
+        {
+            if (OwnItem.ContainsKey(i))
+            {
+                OwnItem.Remove(i);
+            }
+        }
+    }
+
+    public List<int> SelectMyItem(Vector3 startPos, Vector3 endPos, UIBaseAction.ChooseType type, Action<baseItem> OnSelectTodo = null)
     { 
         List<Vector3> range = UIBaseAction.ChooseMultiObjectBase(startPos, endPos, type);
-        QueryMutilOwnItem(range, OnSelectTodo);
+        return QueryMutilOwnItem(range, OnSelectTodo);
     }
     
 
     public void UpdateOwnData()
     {
+        // 每个item 一个index
          int childCout = gameObject.transform.childCount;
-         if(OwnItem == null) OwnItem = new List<baseItem>(childCout);
-         if(OwnItemPos == null) OwnItemPos = new List<Vector3>(childCout);
+         if(childCout == 0) return;
+         
+         if(OwnItem == null) OwnItem = new Dictionary<int, baseItem>();
+         int currentDicCount = OwnItem.Count;
          for (int i = 0; i < childCout; i++)
          {
              GameObject child = gameObject.transform.GetChild(i).gameObject;
-             Vector3 ownPos = child.transform.position;
-             Vector3 pos = ownPos - center;
-             pos /= 0.4f;
-             OwnItemPos[i] = pos;
-             OwnItem[i] = child.GetComponent<baseItem>();
+             baseItem temp = child.GetComponent<baseItem>();
+
+             if (temp.ItemIndex == -1)
+             {
+                temp.ItemIndex = currentDicCount + i;
+                OwnItem.Add(i, temp);
+             }
+             
+             //temp.ItemIndex = i;
+             //if (!OwnItem.ContainsKey(temp.ItemIndex))
+             //{
+             //    OwnItem.Add(i, temp);
+             //}
+             //else
+             //{
+             //    temp.ItemIndex = currentDicCount + i;
+             //    OwnItem.Add(i, temp);
+             //}
          }       
     }
 
@@ -67,26 +93,28 @@ public class YourCar : MonoBehaviour
         center = pos;
     }
 
-    public GameObject QuerySingleOwnItem(Vector3 pos, Action<baseItem> OnQueryTodo = null)
+    public int QuerySingleOwnItem(Vector3 pos, Action<baseItem> OnQueryTodo = null)
     {
-        for (int i = 0; i < OwnItemPos.Count; i++)
+        foreach (var item in OwnItem)
         {
-            if (OwnItemPos[i] == pos)
+            if (item.Value.gameObject.transform.position == pos)
             {
-                OnQueryTodo?.Invoke(OwnItem[i]);
-                return OwnItem[i].gameObject;
+                OnQueryTodo?.Invoke(item.Value);
+                return item.Key;
             }
+            
         }
-        return null;
+        return -1;
     }
 
-    public List<GameObject> QueryMutilOwnItem(List<Vector3> posList, Action<baseItem> OnQueryTodo = null)
+    public List<int> QueryMutilOwnItem(List<Vector3> posList, Action<baseItem> OnQueryTodo = null)
     {
-        List<GameObject> res = new List<GameObject>();
+        List<int> res = new List<int>();
         foreach (var pos in posList)
         {
-            GameObject queryObj =  QuerySingleOwnItem(pos, OnQueryTodo);
-            res.Add(queryObj);
+            int queryObjIndex =  QuerySingleOwnItem(pos, OnQueryTodo);
+            if(queryObjIndex != -1)
+                res.Add(queryObjIndex);
         }
         return res;
     }
