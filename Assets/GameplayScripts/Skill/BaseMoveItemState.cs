@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MoveItemState : IFsmState<baseItem>
+public class BaseMoveItemState : IFsmState<BaseItem>
 {
     private string stateName = "MoveItemState";
     MeshRenderer aimMeshRenderer;
     private GameObject uiShowObj;
 
-    public MoveItemState(baseItem aim)
+    public BaseMoveItemState(BaseItem aim)
     {
         aimObject = aim;
     }
-    public override void OnInit(IFsm<IFsmState<baseItem>> fsmowner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> fsmowner)
     {
         FsmOwner = fsmowner;  
         moveInit();
@@ -41,21 +41,21 @@ public class MoveItemState : IFsmState<baseItem>
         Debug.Log($"OnUpdate : {stateName}");
     }
 
-    void StateChange()
+    public virtual void  StateChange()
     {
         if (aimObject.opType == OpType.Add)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 LeaveTodo();
-                FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>,AddItemState>(FsmOwner, uiShowObj.transform.position);
+                FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,AddItemState>(FsmOwner, uiShowObj.transform.position);
             }
         }else if (aimObject.opType == OpType.Dele)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 LeaveTodo();
-                FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>,DeleItemState>(FsmOwner, uiShowObj.transform.position);
+                FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,DeleItemState>(FsmOwner, uiShowObj.transform.position);
             }
             
         }

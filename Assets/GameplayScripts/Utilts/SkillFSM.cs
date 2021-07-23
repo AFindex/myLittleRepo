@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillFSM : IFsm<IFsmState<baseItem>>
+public class SkillFSM : IFsm<IFsmState<BaseItem>>
 {
-    public override IFsm<IFsmState<baseItem>> Create(string fsmName, params IFsmState<baseItem>[] states)
+    public override IFsm<IFsmState<BaseItem>> Create(string fsmName, params IFsmState<BaseItem>[] states)
     {
         SkillFSM fsm =new SkillFSM();
         this.fsmName = fsmName;
-        this.allStates = new List<IFsmState<baseItem>>();
+        this.allStates = new List<IFsmState<BaseItem>>();
         this.currentState = states[0];
         foreach (var state in states)
         {

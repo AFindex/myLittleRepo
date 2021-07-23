@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.GameCenter;
 
-public class AddItemState : IFsmState<baseItem>
+public class AddItemState : IFsmState<BaseItem>
 {
     
     private string stateName = "AddItemState";
@@ -15,11 +15,11 @@ public class AddItemState : IFsmState<baseItem>
     private List<Vector3> genPos =new List<Vector3>();
     UIBaseAction.ChooseType whichPanel = UIBaseAction.ChooseType.XAxis | UIBaseAction.ChooseType.ZAxis;
     
-    public AddItemState(baseItem item)
+    public AddItemState(BaseItem item)
     {
         this.aimObject = item;
     }
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -83,7 +83,7 @@ public class AddItemState : IFsmState<baseItem>
         if (Input.GetMouseButtonUp(0))
         {
             onMouseUpExtend();
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>,MoveItemState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,BaseMoveItemState>(FsmOwner);
         }
     }
     void ExtendCube()
@@ -105,15 +105,18 @@ public class AddItemState : IFsmState<baseItem>
         {
             GameplayManager.Instance.yourCarObj = new GameObject();
             GameplayManager.Instance.yourCarObj.AddComponent<YourCar>();
+
             GameplayManager.Instance.yourCarObj.name = "yourCar";
-            GameplayManager.Instance.yourCarObj.transform.position = startPos;           
+            GameplayManager.Instance.yourCarObj.transform.position = startPos;
+            GameplayManager.Instance.StartPos = startPos;
+            GameplayManager.Instance.rotation = GameplayManager.Instance.yourCarObj.transform.rotation;
             GameplayManager.Instance.yourCar = GameplayManager.Instance.yourCarObj.GetComponent<YourCar>();           
         }
 
         UIBaseAction.GenMultiObj(genPos, aimObject.gameObject,(GameObject temp) =>
         {
             temp.GetComponent<BoxCollider>().isTrigger = false;
-            temp.GetComponent<MeshRenderer>().material = temp.GetComponent<baseItem>().originMat;
+            temp.GetComponent<MeshRenderer>().material = temp.GetComponent<BaseItem>().originMat;
             temp.transform.SetParent(GameplayManager.Instance.yourCarObj.transform);
             temp.layer = LayerMask.NameToLayer("Bulid");
             temp.name = "Gen_item";

@@ -32,7 +32,7 @@ public class GameUIManager : MonoBehaviour
         }
     }
 
-    public void InitItem(List<baseItem> toInit)
+    public void InitItem(List<BaseItem> toInit)
     {
         selectBoxes[0].SetItem();
         

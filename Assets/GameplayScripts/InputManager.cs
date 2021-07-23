@@ -34,6 +34,9 @@ public class InputManager : MonoBehaviour
         {
             onMouseScroll?.Invoke();
         }
-        GameplayManager.Instance.ChangeOpMode();
+        // 操作模式切换
+        GameplayManager.Instance.SelectedItemOperation();
+        GameplayManager.Instance.ChangeBulidType();
+        
     }
 }

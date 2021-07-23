@@ -12,7 +12,7 @@ public class YourCar : MonoBehaviour
 {
     public YourCarState CurrentState;
     private Vector3 center;
-    private Dictionary<int,baseItem> OwnItem;
+    private Dictionary<int,BaseItem> OwnItem;
     // 相对位置
 
     private void Start()
@@ -49,7 +49,7 @@ public class YourCar : MonoBehaviour
         }
     }
 
-    public List<int> SelectMyItem(Vector3 startPos, Vector3 endPos, UIBaseAction.ChooseType type, Action<baseItem> OnSelectTodo = null)
+    public List<int> SelectMyItem(Vector3 startPos, Vector3 endPos, UIBaseAction.ChooseType type, Action<BaseItem> OnSelectTodo = null)
     { 
         List<Vector3> range = UIBaseAction.ChooseMultiObjectBase(startPos, endPos, type);
         return QueryMutilOwnItem(range, OnSelectTodo);
@@ -62,12 +62,12 @@ public class YourCar : MonoBehaviour
          int childCout = gameObject.transform.childCount;
          if(childCout == 0) return;
          
-         if(OwnItem == null) OwnItem = new Dictionary<int, baseItem>();
+         if(OwnItem == null) OwnItem = new Dictionary<int, BaseItem>();
          int currentDicCount = OwnItem.Count;
          for (int i = 0; i < childCout; i++)
          {
              GameObject child = gameObject.transform.GetChild(i).gameObject;
-             baseItem temp = child.GetComponent<baseItem>();
+             BaseItem temp = child.GetComponent<BaseItem>();
 
              if (temp.ItemIndex == -1)
              {
@@ -93,7 +93,7 @@ public class YourCar : MonoBehaviour
         center = pos;
     }
 
-    public int QuerySingleOwnItem(Vector3 pos, Action<baseItem> OnQueryTodo = null)
+    public int QuerySingleOwnItem(Vector3 pos, Action<BaseItem> OnQueryTodo = null)
     {
         foreach (var item in OwnItem)
         {
@@ -107,7 +107,7 @@ public class YourCar : MonoBehaviour
         return -1;
     }
 
-    public List<int> QueryMutilOwnItem(List<Vector3> posList, Action<baseItem> OnQueryTodo = null)
+    public List<int> QueryMutilOwnItem(List<Vector3> posList, Action<BaseItem> OnQueryTodo = null)
     {
         List<int> res = new List<int>();
         foreach (var pos in posList)

@@ -19,8 +19,8 @@ public class AimEvent : MonoBehaviour
         }
     }
     public GameObject aimObject;
-    public baseItem item;
-    public void OnUISelectedChange(baseItem selectedItem,bool beSelected)
+    public BaseItem item;
+    public void OnUISelectedChange(BaseItem selectedItem,bool beSelected)
     {
         selectedItem.OnUISelected(beSelected);
     }

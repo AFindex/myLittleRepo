@@ -20,9 +20,9 @@ public class FsmManager : MonoBehaviour
         }
     }
 
-    private Dictionary<string,IFsm<IFsmState<baseItem>>> allFsmsDic = new Dictionary<string, IFsm<IFsmState<baseItem>>>();
+    private Dictionary<string,IFsm<IFsmState<BaseItem>>> allFsmsDic = new Dictionary<string, IFsm<IFsmState<BaseItem>>>();
     
-    public void AddFsm( string fsmName,IFsm<IFsmState<baseItem>> fsm)
+    public void AddFsm( string fsmName,IFsm<IFsmState<BaseItem>> fsm)
     {
         if(allFsmsDic.ContainsKey(fsmName)) return;
         
@@ -42,7 +42,7 @@ public class FsmManager : MonoBehaviour
         
     }
 
-    public void ChangeFsmState<T, TA>(IFsm<T> fsm, params Object[] enterParams) where T : IFsmState<baseItem>
+    public void ChangeFsmState<T, TA>(IFsm<T> fsm, params Object[] enterParams) where T : IFsmState<BaseItem>
     {
         fsm.canUpdate = false;
         

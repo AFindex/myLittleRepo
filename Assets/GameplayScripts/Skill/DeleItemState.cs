@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeleItemState : IFsmState<baseItem>
+public class DeleItemState : IFsmState<BaseItem>
 {    
     
     private string stateName = "AddItemState";
@@ -14,11 +14,11 @@ public class DeleItemState : IFsmState<baseItem>
     private List<int> toDele;
     UIBaseAction.ChooseType whichPanel = UIBaseAction.ChooseType.XAxis | UIBaseAction.ChooseType.ZAxis;
     
-    public DeleItemState(baseItem item)
+    public DeleItemState(BaseItem item)
     {
         this.aimObject = item;
     }
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -83,7 +83,7 @@ public class DeleItemState : IFsmState<baseItem>
         if (Input.GetMouseButtonUp(0))
         {
             onMouseUpDele();
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>,MoveItemState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,BaseMoveItemState>(FsmOwner);
         }
     }
     void ExtendCube()

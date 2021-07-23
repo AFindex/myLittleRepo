@@ -23,10 +23,10 @@ public class Test : MonoBehaviour
 /// <summary>
 /// AState
 /// </summary>
-class AtestState : IFsmState<baseItem>
+class AtestState : IFsmState<BaseItem>
 {
     private string stateName = "A";
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -50,18 +50,18 @@ class AtestState : IFsmState<baseItem>
     public override void OnUpdate()
     {
         if(Input.GetKeyDown(KeyCode.A))
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>, BtestState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>, BtestState>(FsmOwner);
         Debug.Log($"OnUpdate : {stateName}");
     }
 }
 /// <summary>
 /// BState
 /// </summary>
-class BtestState : IFsmState<baseItem>
+class BtestState : IFsmState<BaseItem>
 {
     private string stateName = "B";
     
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -85,18 +85,18 @@ class BtestState : IFsmState<baseItem>
     public override void OnUpdate()
     {
         if(Input.GetKeyDown(KeyCode.B))
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>, CtestState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>, CtestState>(FsmOwner);
         Debug.Log($"OnUpdate : {stateName}");
     }
 }
 /// <summary>
 /// CState
 /// </summary>
-class CtestState : IFsmState<baseItem>
+class CtestState : IFsmState<BaseItem>
 {
     private string stateName = "C";
         
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -120,18 +120,18 @@ class CtestState : IFsmState<baseItem>
     public override void OnUpdate()
     {
         if(Input.GetKeyDown(KeyCode.C))
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>, DtestState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>, DtestState>(FsmOwner);
         Debug.Log($"OnUpdate : {stateName}");
     }
 }
 /// <summary>
 /// DState
 /// </summary>
-class DtestState : IFsmState<baseItem>
+class DtestState : IFsmState<BaseItem>
 {
     private string stateName = "D";
         
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -155,18 +155,18 @@ class DtestState : IFsmState<baseItem>
     public override void OnUpdate()
     {
         if(Input.GetKeyDown(KeyCode.D))
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>, EtestState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>, EtestState>(FsmOwner);
         Debug.Log($"OnUpdate : {stateName}");
     }
 }
 /// <summary>
 /// EState
 /// </summary>
-class EtestState : IFsmState<baseItem>
+class EtestState : IFsmState<BaseItem>
 {
     private string stateName = "E";
         
-    public override void OnInit(IFsm<IFsmState<baseItem>> owner)
+    public override void OnInit(IFsm<IFsmState<BaseItem>> owner)
     {
         FsmOwner = owner;  
         Debug.Log($"OnInit : {stateName}");
@@ -190,7 +190,7 @@ class EtestState : IFsmState<baseItem>
     public override void OnUpdate()
     {
         if(Input.GetKeyDown(KeyCode.E))
-            FsmManager.Instance.ChangeFsmState<IFsmState<baseItem>, AtestState>(FsmOwner);
+            FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>, AtestState>(FsmOwner);
         Debug.Log($"OnUpdate : {stateName}");
     }
 }

@@ -1,15 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Build.Content;
 using UnityEngine;
 
-enum ObjState
+public enum ObjState
 {
     Building,
     Runing
 }
 
-enum BulidState
+public enum BulidState
 {
     AddItem,
     DeleItem
@@ -31,9 +32,14 @@ public class GameplayManager : MonoBehaviour
         
     // Start is called before the first frame update
     public GameObject yourCarObj;
+    public Vector3 StartPos;
+    public Quaternion rotation;
     public YourCar yourCar;
-    public List<baseItem> items;
+    public List<BaseItem> items;
     private int index = -1;
+    
+    //
+    public BaseItem currentSelectedItem;
     void Awake()
     {
         InputManager.Instance.ResigerMouseScroll(MouseMoveEvent);
@@ -58,36 +64,73 @@ public class GameplayManager : MonoBehaviour
 
         if (index < items.Count && index >= 0)
         {
+            currentSelectedItem = items[index];
             AimEvent.Instance.OnUISelectedChange(items[index], true);
             GameUIManager.Instance.SetState("测试方块-建造");
         }
         else
         {
+            currentSelectedItem = null;
             GameUIManager.Instance.SetState("");
         }
         
         GameUIManager.Instance.SetBoxSelected(index);
     }
 
-    public void ChangeOpMode()
+    void SetBulidType(ObjState state)
     {
-        if (Input.GetKeyDown(KeyCode.U))
+        if (state == ObjState.Building)
         {
-            Debug.Log($"Change Op Mode to : OpType.Dele");
-            if (index < items.Count)
+            if (yourCarObj != null)
             {
-                items[index].opType = OpType.Dele;
-                GameUIManager.Instance.SetState("测试方块-涂色");
+                Rigidbody rig = yourCarObj.GetComponent<Rigidbody>();
+                if(rig != null )
+                    Destroy(rig);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    items[i].OnLeaveRuning();
+                }
+                                
+                yourCarObj.transform.position = StartPos;
+                yourCarObj.transform.rotation = rotation;
+            }
+            
+        }else if (state == ObjState.Runing)
+        {
+            if (yourCarObj != null)
+            {
+                Rigidbody rig = yourCarObj.GetComponent<Rigidbody>();
+                if (rig == null)
+                {
+                    rig = yourCarObj.AddComponent<Rigidbody>();
+                }
+                for (int i = 0; i < items.Count; i++)
+                {
+                    items[i].OnRuning();
+                }               
+                rig.useGravity = true;
+                rig.freezeRotation = false;
             }
         }
-        if (Input.GetKeyDown(KeyCode.I))
+    }
+
+    // 全局
+    public void ChangeBulidType()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log($"Change Op Mode to : OpType.Add");
-            if (index < items.Count)
-            {
-                items[index].opType = OpType.Add;
-                GameUIManager.Instance.SetState("测试方块-建造");
-            }
+            SetBulidType(ObjState.Runing);
+        }else if (Input.GetKeyDown(KeyCode.B))
+        {
+            SetBulidType(ObjState.Building);
+        }
+    }
+
+    public void SelectedItemOperation()
+    {
+        if (currentSelectedItem)
+        {
+            currentSelectedItem.ChangeOpMode();
         }
     }
 
