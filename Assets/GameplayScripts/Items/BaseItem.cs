@@ -21,6 +21,7 @@ public class BaseItem : MonoBehaviour
     // instance
     public bool canSet = true;
     public int ItemIndex = -1;
+    public int BlockListIndex = 0;
     public OpType opType = OpType.Add;
     public string itemName = "test";
     

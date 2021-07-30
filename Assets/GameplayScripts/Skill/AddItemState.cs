@@ -5,7 +5,6 @@ using UnityEngine.SocialPlatforms.GameCenter;
 
 public class AddItemState : IFsmState<BaseItem>
 {
-    
     private string stateName = "AddItemState";
     private GameObject test;
     private Vector3 realScale;
@@ -13,6 +12,7 @@ public class AddItemState : IFsmState<BaseItem>
     private Vector3 startGenPos;
     private GameObject extendObj;
     private List<Vector3> genPos =new List<Vector3>();
+    private int blockIndex = -1;
     UIBaseAction.ChooseType whichPanel = UIBaseAction.ChooseType.XAxis | UIBaseAction.ChooseType.ZAxis;
     
     public AddItemState(BaseItem item)
@@ -60,6 +60,9 @@ public class AddItemState : IFsmState<BaseItem>
         {
             if (parms[0] is Vector3)
                 startPos = (Vector3)parms[0];
+            if (parms[2] is int)
+                blockIndex = (int) parms[2];
+
         }
         Debug.Log($"OnEnter : {stateName}, startPos{startPos}");
     }
@@ -113,12 +116,18 @@ public class AddItemState : IFsmState<BaseItem>
             GameplayManager.Instance.yourCar = GameplayManager.Instance.yourCarObj.GetComponent<YourCar>();           
         }
 
+        int index = blockIndex;
         UIBaseAction.GenMultiObj(genPos, aimObject.gameObject,(GameObject temp) =>
         {
             temp.GetComponent<BoxCollider>().isTrigger = false;
             temp.GetComponent<MeshRenderer>().material = temp.GetComponent<BaseItem>().originMat;
-            temp.transform.SetParent(GameplayManager.Instance.yourCarObj.transform);
+            BaseItem baseItem = temp.GetComponent<BaseItem>();
             temp.layer = LayerMask.NameToLayer("Bulid");
+            GameplayManager.Instance.yourCar.AddItemToBlock(ref baseItem,index);
+            if (index == -1)
+            {
+                index = -2;
+            }
             temp.name = "Gen_item";
             temp.SetActive(true);
         });

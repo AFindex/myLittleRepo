@@ -7,6 +7,7 @@ public class BaseMoveItemState : IFsmState<BaseItem>
     private string stateName = "MoveItemState";
     MeshRenderer aimMeshRenderer;
     private GameObject uiShowObj;
+    private int blockIndex;
 
     public BaseMoveItemState(BaseItem aim)
     {
@@ -48,7 +49,10 @@ public class BaseMoveItemState : IFsmState<BaseItem>
             if (Input.GetMouseButtonDown(0))
             {
                 LeaveTodo();
-                FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,AddItemState>(FsmOwner, uiShowObj.transform.position);
+                FsmManager.Instance.ChangeFsmState<IFsmState<BaseItem>,AddItemState>(FsmOwner, 
+                    uiShowObj.transform.position,
+                    uiShowObj.transform.rotation, 
+                    blockIndex);
             }
         }else if (aimObject.opType == OpType.Dele)
         {
@@ -102,28 +106,36 @@ public class BaseMoveItemState : IFsmState<BaseItem>
                 newPos.y = newPos.y - (newPos.y % step);
                 newPos.z = newPos.z - (newPos.z % step);
                 // pos
+                
+                blockIndex = -1;
                 uiShowObj.transform.position = newPos;
             }else if (hit.transform.gameObject.CompareTag("BulidItem"))
             {
                 uiShowObj.SetActive(true);
-                Vector3 hitDir = hit.point - hit.transform.position;
-                Vector3 newPos = hit.transform.position;
-                UIBaseAction.CheckVectorDir(hitDir,((type, isPostiveDir) =>
-                {
-                    float addValue = step;
-                    if (!isPostiveDir) addValue = -step;
-                    if (type == UIBaseAction.ChooseType.XAxis)
-                    {
-                        newPos.x += addValue;
-                    }else if (type == UIBaseAction.ChooseType.YAxis)
-                    {
-                        newPos.y += addValue;
-                    }else if (type == UIBaseAction.ChooseType.ZAxis)
-                    {
-                        newPos.z += addValue;
-                    }
-                }));
+                Vector3 hitObjPos = hit.transform.position;
+                ItemOnplay itemOnplay = hit.transform.gameObject.GetComponent<ItemOnplay>();
+                BaseItem baseItem = hit.transform.gameObject.GetComponent<BaseItem>();
+                blockIndex = baseItem.BlockListIndex;
+                int slotIndex =  itemOnplay.InWhichFace(hit.point);
+                Vector3 posDir = (itemOnplay.slotS[slotIndex].position - hitObjPos).normalized;
+                Vector3 newPos =hitObjPos  + posDir * step;
+                //UIBaseAction.CheckVectorDir(hitDir,((type, isPostiveDir) =>
+                //{
+                //    float addValue = step;
+                //    if (!isPostiveDir) addValue = -step;
+                //    if (type == UIBaseAction.ChooseType.XAxis)
+                //    {
+                //        newPos.x += addValue;
+                //    }else if (type == UIBaseAction.ChooseType.YAxis)
+                //    {
+                //        newPos.y += addValue;
+                //    }else if (type == UIBaseAction.ChooseType.ZAxis)
+                //    {
+                //        newPos.z += addValue;
+                //    }
+                //}));
                 // pos
+                uiShowObj.transform.rotation = hit.transform.rotation;
                 uiShowObj.transform.position = newPos;
             }
         } else

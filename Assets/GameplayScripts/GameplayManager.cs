@@ -38,7 +38,6 @@ public class GameplayManager : MonoBehaviour
     public List<BaseItem> items;
     private int index = -1;
     
-    //
     public BaseItem currentSelectedItem;
     void Awake()
     {
@@ -46,7 +45,6 @@ public class GameplayManager : MonoBehaviour
         GameUIManager.Instance.InitItem(items);
         MouseMoveEvent();
     }
-
     void MouseMoveEvent()
     {
         if (index < items.Count && index >= 0)
@@ -76,16 +74,14 @@ public class GameplayManager : MonoBehaviour
         
         GameUIManager.Instance.SetBoxSelected(index);
     }
-
     void SetBulidType(ObjState state)
     {
         if (state == ObjState.Building)
         {
             if (yourCarObj != null)
             {
-                Rigidbody rig = yourCarObj.GetComponent<Rigidbody>();
-                if(rig != null )
-                    Destroy(rig);
+                yourCar.YourCarSetRunning(false);
+
                 for (int i = 0; i < items.Count; i++)
                 {
                     items[i].OnLeaveRuning();
@@ -99,21 +95,15 @@ public class GameplayManager : MonoBehaviour
         {
             if (yourCarObj != null)
             {
-                Rigidbody rig = yourCarObj.GetComponent<Rigidbody>();
-                if (rig == null)
-                {
-                    rig = yourCarObj.AddComponent<Rigidbody>();
-                }
+                yourCar.YourCarSetRunning(true);
+
                 for (int i = 0; i < items.Count; i++)
                 {
                     items[i].OnRuning();
                 }               
-                rig.useGravity = true;
-                rig.freezeRotation = false;
             }
         }
     }
-
     // 全局
     public void ChangeBulidType()
     {
@@ -125,7 +115,6 @@ public class GameplayManager : MonoBehaviour
             SetBulidType(ObjState.Building);
         }
     }
-
     public void SelectedItemOperation()
     {
         if (currentSelectedItem)
