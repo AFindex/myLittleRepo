@@ -11,54 +11,45 @@ public class RoleMove : MonoBehaviour
     public float force = 1f;
     public float heigh = 10f;
     public GameObject[] vertex;
+    
     private bool fristTypeLeg = false;
+    private bool fristStep = true;
+    
+    private Vector3 beforeMovePos;
+    private int index = 0;
     void Start()
     {
+        beforeMovePos = transform.position;
         //StartCoroutine(Timer());
     }
 
     // Update is called once per frame
     void Update()
     {
-        //if (fristTypeLeg)
-        //{
-        //    Legs[0].CanJump = true;
-        //    Legs[2].CanJump = true;
-        //    
-        //    Legs[1].CanJump = false;
-        //    Legs[3].CanJump = false;
-        //}
-        //else
-        //{
-        //    Legs[0].CanJump = false;
-        //    Legs[2].CanJump = false;
-        //    
-        //    Legs[1].CanJump = true;
-        //    Legs[3].CanJump = true;
-        //}
+        Vector3 addDir = transform.position - beforeMovePos;
+        addDir.y = 0;
+        float Pdis = addDir.magnitude;
+        if(Pdis > 2)
+        {
+            int index2 = (index + 2) % 4;
+            Legs[index].CanJump = false;
+            Legs[index2].CanJump = false;
+            index++;
+            index %= 4;
+            index2 = (index + 2) % 4;
+            Debug.Log(index);
+            Legs[index].CanJump = true;
+            Legs[index2].CanJump = true;
+            
+            beforeMovePos = transform.position;
+        }
+
         DynamicForce();
         
     }
 
     void DynamicForce()
     {
-        //foreach (var slot in slots)
-        //{
-        //    Vector3 startPos = slot.position;
-        //    RaycastHit hit;
-        //    Vector3 dir = Vector3.down;
-        //    if (Physics.Raycast( startPos,dir, out hit, 1000f, ~(1<<6)))
-        //    {
-        //        Debug.DrawLine(startPos,hit.point, Color.blue);
-        //        float dis = Vector3.Distance(startPos, hit.point);
-        //        math.clamp(1 - dis, 0, 1);
-        //        Debug.Log(dis);
-        //        float power =force * 0.25f ;
-        //        rig.AddForceAtPosition(Vector3.up* Mathf.Lerp(0, force, dis),startPos);
-        //        
-        //        
-        //    }
-        //}
         for (int i = 0; i < vertex.Length; i++)
         {
             var wV = vertex[i].transform.position;
@@ -70,10 +61,10 @@ public class RoleMove : MonoBehaviour
                 Debug.DrawLine(wV,hit.point, Color.blue);
                 float distance = Vector3.Distance(hit.point, wV);
                 distance /= heigh;
-                Debug.Log($"distance:{distance}");
+                //Debug.Log($"distance:{distance}");
                 distance = Mathf.Clamp(0.5f -distance, 0, 0.5f);
-                float temp = Mathf.Lerp(-force, force, distance);
-                Debug.Log($"temp:{temp}");
+                float temp = Mathf.Lerp(0, force, distance);
+                //Debug.Log($"temp:{temp}");
                 rig.AddForceAtPosition(Vector3.up * temp, wV);
             }
         } 
