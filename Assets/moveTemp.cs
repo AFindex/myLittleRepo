@@ -16,16 +16,24 @@ public class moveTemp : MonoBehaviour
     void Update()
     {
         MoveControlBySimpleMove();
+        MoveWithCamera();
         
     }
     //Translate移动控制函数
-    void MoveControlByTranslateGetAxis()
+    void MoveWithCamera()
     {
-        float horizontal = Input.GetAxis("Horizontal"); //A D 左右
-        float vertical = Input.GetAxis("Vertical"); //W S 上 下
-
-        transform.Translate(transform.forward * vertical * m_speed * Time.deltaTime);//W S 上 下
-        transform.Translate(transform.right * horizontal * m_speed * Time.deltaTime);//A D 左右
+        float move = Input.GetAxis("Mouse X");
+        Vector3 dir = ( Camera.main.transform.position - transform.position).normalized;
+        dir.y = 0;
+        Vector3 currentDir = transform.forward;
+        currentDir.y = 0;
+        float angle = Vector3.Angle(-dir, currentDir);
+        //Debug.Log($"move:{move},angle:{angle}");
+        //
+        float value = 0;
+        if(angle!=0) value = move / angle;
+        transform.forward = -dir;
+        //transform.RotateAround(transform.position,Vector3.up,value );
     }
     //SimpleMove移动控制函数 角色控制器
     void MoveControlBySimpleMove()
@@ -35,7 +43,9 @@ public class moveTemp : MonoBehaviour
 
         Vector3 dir = (transform.position - Camera.main.transform.position).normalized;
         dir.y = 0;
+        Vector3 hDir = -Vector3.Cross(dir, Vector3.up).normalized;
+        Vector3 moveDir = (dir * vertical + horizontal * hDir).normalized;
         
-        m_character.SimpleMove(dir* vertical * m_speed); 
+        m_character.SimpleMove(moveDir* m_speed); 
     }
 }
