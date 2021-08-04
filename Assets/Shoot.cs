@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using UnityEngine;
 
 public class Shoot : MonoBehaviour
@@ -8,24 +9,36 @@ public class Shoot : MonoBehaviour
     // Start is called before the first frame update
     public List<GameObject> slots;
     public GameObject ropeNode;
+    public Rigidbody rig;
+
+    public float lSpeed = 1f;
+    public float rSpeed = 1f;
+    //
     List<GameObject> ropeNodeListL = new List<GameObject>();
     List<GameObject> ropeNodeListR = new List<GameObject>();
     private bool isFlying = false;
+    private bool canShoot = false;
 
     private Vector3 LTarget;
     private Vector3 RTarget;
+    private Vector3 hitPos;
     void Start()
     {
         ropeNode.transform.position = slots[0].transform.position;
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 80; i++)
         {
             GameObject tempNodeL = Instantiate(ropeNode, slots[0].transform.position, Quaternion.identity);
             GameObject tempNodeR = Instantiate(ropeNode, slots[1].transform.position, Quaternion.identity);
-            tempNodeL.transform.SetParent(ropeNode.transform);
-            tempNodeR.transform.SetParent(ropeNode.transform);
+            tempNodeL.transform.SetParent(transform);
+            tempNodeR.transform.SetParent(transform);
             ropeNodeListL.Add(tempNodeL);
-            ropeNodeListL.Add(tempNodeR);
+            ropeNodeListR.Add(tempNodeR);
         }
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        StartCoroutine(FlyingL());
+        StartCoroutine(FlyingR());
     }
 
     // Update is called once per frame
@@ -38,48 +51,71 @@ public class Shoot : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (!isFlying && Physics.Raycast(ray, out hit, 10000f,(1<<8)))
+        if (Physics.Raycast(ray, out hit, 10000f,(1<<8)))
         {
-            Vector3 hitPos = hit.point;
-            if (Input.GetMouseButtonDown(0))
-            {
-                LTarget = hitPos;
-                isFlying = true;
-                StartCoroutine(Flying(false));
-            }else if (Input.GetMouseButtonDown(1))
-            {
-                RTarget = hitPos;
-                isFlying = true;
-                StartCoroutine(Flying(true));
-            }
+            hitPos = hit.point;
+            canShoot = true;
+        }
+        else
+        {
+            canShoot = false;
         }
     }
 
-    IEnumerator Flying(bool isRight)
+    IEnumerator FlyingR()
     {
+        bool isShooting = false;
         while (true)
         {
-            if (isRight)
+            if (canShoot&&Input.GetMouseButtonDown(1))
             {
-                GenRope(ropeNodeListR,slots[1].transform.position, RTarget);
-                if (Input.GetMouseButtonUp(1))
+                isShooting = true;
+                RTarget = hitPos;
+            }else if (Input.GetMouseButtonUp(1))
+            {
+                ResetRope(ropeNodeListR,slots[1].transform.position);
+                isShooting = false;
+            }
+            if (isShooting)
+            {
+                Vector3 dir = (RTarget - slots[1].transform.position).normalized;
+                if (Input.GetKey(KeyCode.E))
                 {
-                    isFlying = false;
-                    ResetRope(ropeNodeListR,slots[1].transform.position);
-                    yield break;
+                    rig.AddForce(dir*rSpeed);
                 }
-            }else
+                GenRope(ropeNodeListR, slots[1].transform.position, RTarget);
+            }
+            
+            yield return null;
+        }
+        yield return null;
+    }
+    IEnumerator FlyingL()
+    {
+        bool isShooting = false;
+        while (true)
+        {
+            if (canShoot&&Input.GetMouseButtonDown(0))
             {
+                LTarget = hitPos;
+                isShooting = true;
+            }else if (Input.GetMouseButtonUp(0))
+            {
+                ResetRope(ropeNodeListL,slots[0].transform.position);
+                isShooting = false;
+            }
+            if (isShooting)
+            {
+                Vector3 dir = (LTarget - slots[0].transform.position).normalized;
+                if (Input.GetKey(KeyCode.Q))
+                {
+                    rig.AddForce(dir * lSpeed);
+                }
                 GenRope(ropeNodeListL,slots[0].transform.position, LTarget);
-                if (Input.GetMouseButtonUp(0))
-                {
-                    isFlying = false;
-                    ResetRope(ropeNodeListL,slots[0].transform.position);
-                    yield break;
-                }
             }
             yield return null;
         }
+        yield return null;
     }
     
 
