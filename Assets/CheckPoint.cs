@@ -13,6 +13,7 @@ public class CheckPoint : MonoBehaviour
     public UnityEvent OnExtendTodo;
     public UnityEvent OnNotExtendTodo;
     public GameObject Slot;
+    public float extendLen = 10;
     void Start()
     {
         
@@ -21,7 +22,7 @@ public class CheckPoint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(Slot.transform.position, transform.position) > 10)
+        if (Vector3.Distance(Slot.transform.position, transform.position) > extendLen)
         {
             OnExtendTodo?.Invoke();
         }

@@ -1,23 +1,34 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public class moveTemp : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float m_speed;
-    public CharacterController m_character;
+    public float force;
+    public float Gforce;
+    public float GMaxSpeed;
+    public float maxSpeed;
+    public Rigidbody rigidbody;
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         MoveControlBySimpleMove();
         MoveWithCamera();
         
+        Gravity();
+    }
+
+    void Gravity()
+    {
+        rigidbody.AddForce(Vector3.down * Gforce,ForceMode.Acceleration);
     }
     //Translate移动控制函数
     void MoveWithCamera()
@@ -40,6 +51,31 @@ public class moveTemp : MonoBehaviour
         hDir.y = 0;
         Vector3 moveDir = (dir * vertical + hDir * horizontal).normalized;
         
-        transform.Translate(moveDir*m_speed,Space.World);
+        if ((rigidbody.velocity ).magnitude <= maxSpeed)
+        {
+            rigidbody.AddForce(moveDir*force,ForceMode.Acceleration);
+        }
+        
+        //transform.Translate(moveDir*m_speed,Space.World);
+        
+    }
+    IEnumerator timer(Action inTimeTodo, Action AfterTodo)
+    {
+        int MaxTime = 5;
+        int i = 0;
+        while (true)
+        {
+            if (i >= MaxTime)
+            {
+                AfterTodo?.Invoke();
+                yield break;
+            }
+            else
+            {
+               inTimeTodo?.Invoke();
+            }
+            i++;
+            yield return null;
+        }
     }
 }

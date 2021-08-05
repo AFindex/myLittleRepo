@@ -36,6 +36,22 @@ namespace UnityStandardAssets.Cameras
             m_RayHitComparer = new RayHitComparer();
         }
 
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawSphere(transform.position, 1); 
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(m_Ray.origin, 2); 
+            if (m_Hits != null)
+            {
+                for (int i = 0; i < m_Hits.Length; i++)
+                {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawSphere(m_Hits[i].point, 3); 
+                }    
+            }
+            
+        }
 
         private void LateUpdate()
         {

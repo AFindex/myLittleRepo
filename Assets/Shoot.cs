@@ -19,8 +19,10 @@ public class Shoot : MonoBehaviour
     //
     List<GameObject> ropeNodeListL = new List<GameObject>();
     List<GameObject> ropeNodeListR = new List<GameObject>();
-    private bool isFlying = false;
     private bool canShoot = false;
+    
+    private bool rShooting = false;
+    private bool lShooting = false;
 
     private Vector3 LTarget;
     private Vector3 RTarget;
@@ -50,9 +52,34 @@ public class Shoot : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         AimAtWell();
+        Debug.Log($"Rshooting: {rShooting}");
+
+        if (rShooting)
+        {
+            Vector3 dirR = (RTarget - slots[1].transform.position).normalized;
+            float dot = Vector3.Dot(rig.velocity, dirR);
+            dot = dot > 0 ? dot : -dot;
+            float dirV = dot / rig.velocity.magnitude;
+            if (dirV< rSpeed)
+            {
+                rig.AddForce(dirR * rForce,ForceMode.Acceleration);
+            }
+        }
+
+        if (lShooting)
+        {
+            Vector3 dirL = (LTarget - slots[0].transform.position).normalized;
+            float dot = Vector3.Dot(rig.velocity, dirL);
+            dot = dot > 0 ? dot : -dot;
+            float dirV = dot / rig.velocity.magnitude;
+            if (dirV < lSpeed)
+            {
+                rig.AddForce(dirL * lForce,ForceMode.Acceleration);
+            }
+        }
     }
 
     void AimAtWell()
@@ -80,6 +107,7 @@ public class Shoot : MonoBehaviour
                 Vector3 len = (slots[1].transform.position - RTargetGObj.transform.position);
                 Vector3 dir = len.normalized;
                 float lenV = len.magnitude;
+                Debug.Log($"lenv:{lenV}");
                 float disFocter = Mathf.Clamp(lenV, 12, 15);
                 float force = (disFocter - 12)*rForce;
                 Rigidbody rigTemp = RTargetGObj.GetComponent<Rigidbody>();
@@ -95,7 +123,7 @@ public class Shoot : MonoBehaviour
                 float lenV = len.magnitude;
                 float disFocter = Mathf.Clamp(lenV, 12, 15);
                 float force = (disFocter - 12)*lForce;
-                Rigidbody rigTemp = RTargetGObj.GetComponent<Rigidbody>();
+                Rigidbody rigTemp = LTargetGObj.GetComponent<Rigidbody>();
                 if (rigTemp)
                 {
                     rigTemp.AddForceAtPosition(dir*force,LTarget);
@@ -106,17 +134,24 @@ public class Shoot : MonoBehaviour
 
     IEnumerator FlyingR()
     {
+        int MaxTime = 300;
+        int i = 0;
+        
         Vector3 objPos = Vector3.zero; 
         while (true)
         {
             if (canShoot&&Input.GetMouseButtonDown(1))
             {
+                i = 0;
                 RTarget = hitPos;
                 RTargetGObj = hitObj;
                 objPos = RTargetGObj.transform.InverseTransformPoint(RTarget);
             }else if (Input.GetMouseButtonUp(1))
             {
                 ResetRope(ropeNodeListR,slots[1].transform.position);
+                RTarget = slots[1].transform.position;
+                RTargetGObj = null;
+                rShooting = false;
             }
             if (Input.GetMouseButton(1))
             {
@@ -126,9 +161,17 @@ public class Shoot : MonoBehaviour
                     Vector3 dir = (RTarget - slots[1].transform.position).normalized;
                     if (Input.GetKey(KeyCode.E))
                     {
-                        rig.AddForce(dir * rSpeed);
+                        if (i >= MaxTime)
+                        {
+                            rShooting = false;
+                        }
+                        else
+                        {
+                            rShooting = true;
+                        }
+                        
+                        i++;
                     }
- 
                     OnShootIt(true);
                     GenRope(ropeNodeListR, slots[1].transform.position, RTarget);
                 }
@@ -139,19 +182,26 @@ public class Shoot : MonoBehaviour
         }
         yield return null;
     }
+
     IEnumerator FlyingL()
     {
+        int MaxTime = 300;
+        int i = 0;
         Vector3 objPos = Vector3.zero; 
         while (true)
         {
             if (canShoot&&Input.GetMouseButtonDown(0))
             {
+                i = 0;
                 LTarget = hitPos;
                 LTargetGObj = hitObj;
                 objPos = LTargetGObj.transform.InverseTransformPoint(LTarget);
             }else if (Input.GetMouseButtonUp(0))
             {
                 ResetRope(ropeNodeListL,slots[0].transform.position);
+                LTarget = slots[0].transform.position;
+                LTargetGObj = null;
+                lShooting = false;
             }
             if (Input.GetMouseButton(0))
             {
@@ -161,7 +211,15 @@ public class Shoot : MonoBehaviour
                     Vector3 dir = (LTarget - slots[0].transform.position).normalized;
                     if (Input.GetKey(KeyCode.Q))
                     {
-                        rig.AddForce(dir * lSpeed);
+                        if (i >= MaxTime)
+                        {
+                            lShooting = false;
+                        }
+                        else
+                        {
+                            lShooting = true;
+                        }
+                        i++;
                     }
                     OnShootIt(false);
                     GenRope(ropeNodeListL,slots[0].transform.position, LTarget);                   
