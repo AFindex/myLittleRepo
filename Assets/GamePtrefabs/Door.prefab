@@ -60,7 +60,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535877071912064533}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0010714639, z: 11.72397}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1535877071895086448}
@@ -142,7 +142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Slot: {fileID: 1535877072147296381}
   isOpening: 0
-  speed: 0.009
+  OpenSpeed: 1
+  CloseSpeed: 1
 --- !u!1 &1535877072147296381
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,7 +168,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1535877072147296381}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.759, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1535877071895086448}

@@ -46,7 +46,7 @@ GameObject:
   - component: {fileID: 4481699418732088623}
   - component: {fileID: 4481699418732088622}
   - component: {fileID: 4481699418732088609}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,6 +194,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   Slot: {fileID: 4481699419081812938}
+  extendLen: 10
 --- !u!1 &4481699419081812938
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,7 +209,7 @@ GameObject:
   - component: {fileID: 4481699419081812936}
   - component: {fileID: 4481699419081812939}
   - component: {fileID: 4481699419081812948}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Targer
   m_TagString: triger
   m_Icon: {fileID: 0}

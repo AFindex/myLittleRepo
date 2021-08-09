@@ -21,33 +21,33 @@ public class Water : MonoBehaviour
         
     }
 
-    private void OnDrawGizmos()
-    {
-        _meshFilter = gameObject.GetComponent<MeshFilter>();
-        Mesh mesh = _meshFilter.mesh;
-        if (lPos.Count == 0)
-        {
-            for (int i = 0; i < mesh.vertexCount; i++)
-            {
-                Vector3 pos = mesh.vertices[i];
-                lPos.Add(pos);
-            }    
-        }
+    //private void OnDrawGizmos()
+    //{
+    //    _meshFilter = gameObject.GetComponent<MeshFilter>();
+    //    Mesh mesh = _meshFilter.mesh;
+    //    if (lPos.Count == 0)
+    //    {
+    //        for (int i = 0; i < mesh.vertexCount; i++)
+    //        {
+    //            Vector3 pos = mesh.vertices[i];
+    //            lPos.Add(pos);
+    //        }    
+    //    }
 
 
-        foreach (var pos in lPos)
-        {
-            Vector3 wPos = transform.TransformPoint(pos);
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(wPos, 0.1f);
-        }
-        
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(outerPos, 0.5f);
-        
-        
-        Vector3 oLPos = transform.InverseTransformPoint(outerPos);
-        
-        
-    }
+    //    foreach (var pos in lPos)
+    //    {
+    //        Vector3 wPos = transform.TransformPoint(pos);
+    //        Gizmos.color = Color.red;
+    //        Gizmos.DrawSphere(wPos, 0.1f);
+    //    }
+    //    
+    //    Gizmos.color = Color.yellow;
+    //    Gizmos.DrawSphere(outerPos, 0.5f);
+    //    
+    //    
+    //    Vector3 oLPos = transform.InverseTransformPoint(outerPos);
+    //    
+    //    
+    //}
 }

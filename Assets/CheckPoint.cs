@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityStandardAssets.Utility.Inspector;
 
 public class CheckPoint : MonoBehaviour
 {
